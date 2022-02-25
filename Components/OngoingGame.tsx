@@ -6,10 +6,14 @@ const Wrapper = styled.div`
   box-shadow: -0.5rem 0.5rem ${({ theme }) => theme.colors.green};
 `;
 
+const Title = styled.h1`
+  text-transform: uppercase;
+`;
+
 const OngoingGame = () => {
   return (
     <Wrapper>
-      <h1>Ongoing game</h1>
+      <Title>Ongoing game</Title>
       <p>Youhou, 1/2 players have accepted your request!</p>
 
       <div>
