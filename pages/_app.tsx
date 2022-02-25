@@ -1,7 +1,9 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { initializeApp } from "firebase/app";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 import { ThemeProvider } from "styled-components";
+
 import theme from "../shared/theme";
 import GlobalStyle from "../shared/GlobalStyle";
 
@@ -16,17 +18,21 @@ const firebaseConfig = {
   appId: "1:529990881670:web:c3b73b56fbe6e27b849c07",
 };
 
+firebase.initializeApp(firebaseConfig);
+export const auth = firebase.auth();
+console.log(auth);
 
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
 
+export const signInWithGoogle = () => auth.signInWithPopup(provider);
 
-const app = initializeApp(firebaseConfig);
-console.log(app);
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
+        <Component firebase={firebase} {...pageProps} />
       </ThemeProvider>
     </>
   );

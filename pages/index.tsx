@@ -1,68 +1,47 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from "next";
+import { useEffect, useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import { signInWithGoogle } from "./_app";
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ firebase }: any) => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user: any) => setUser(user));
+  }, [firebase]);
+
+  function signOut() {
+    firebase.auth().signOut();
+  }
+
+  console.log("User details:", user);
   return (
     <div className={styles.container}>
       <Head>
-        <title>Project Taxi</title>
+        <title>Project Taxi 🚕</title>
         <meta name="description" content="Driving your fun" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
+      <main>
+        {!user && <button onClick={signInWithGoogle}>Sign in</button>}
+        {user && <button onClick={signOut}>Sign out</button>}
+        <h2>{user ? "Signed in" : "Signed out"}</h2>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <Image
+          src="/landing-page-illustration.png"
+          alt="Yellow taxi and a lost girl"
+          title="Yellow taxi and a lost girl"
+          width="500"
+          height="400"
+        />
       </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <footer className={styles.footer}>Made with fun</footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
