@@ -3,20 +3,10 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { signInWithGoogle } from "./_app";
+import Layout from "../Components/Layout";
 
-const Home: NextPage = ({ firebase }: any) => {
-  const [user, setUser] = useState(null);
+const Home: NextPage = () => {
 
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged((user: any) => setUser(user));
-  }, [firebase]);
-
-  function signOut() {
-    firebase.auth().signOut();
-  }
-
-  console.log("User details:", user);
   return (
     <div className={styles.container}>
       <Head>
@@ -25,11 +15,7 @@ const Home: NextPage = ({ firebase }: any) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        {!user && <button onClick={signInWithGoogle}>Sign in</button>}
-        {user && <button onClick={signOut}>Sign out</button>}
-        <h2>{user ? "Signed in" : "Signed out"}</h2>
-
+      <Layout>
         <Image
           src="/landing-page-illustration.png"
           alt="Yellow taxi and a lost girl"
@@ -37,7 +23,7 @@ const Home: NextPage = ({ firebase }: any) => {
           width="500"
           height="400"
         />
-      </main>
+      </Layout>
 
       <footer className={styles.footer}>Made with fun</footer>
     </div>
