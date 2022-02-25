@@ -1,9 +1,16 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import styled from "styled-components";
+
 import Header from "./Header";
 
 const Main = styled.main`
-  flex: 1;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const RightColumn = styled.div`
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 type LayoutProps = {

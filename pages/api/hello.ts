@@ -5,10 +5,6 @@ import "firebase/compat/auth";
 import admin from "firebase-admin";
 import key from "./../../project-taxi-8a2bf-firebase-adminsdk-e6ic2-d08ff9936f.json";
 
-type Data = {
-  name: string;
-};
-
 const withPrivateKey = {
   ...key,
   private_key: process.env.firebase_admin_private_key,
@@ -22,17 +18,15 @@ if (!admin.apps.length) {
   });
 }
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const auth = admin.auth();
 
   auth
     .listUsers()
     .then((userRecords) => {
       userRecords.users.forEach((user) => console.log(user.toJSON()));
-      res.end("Success!");
+      res.json({ userRecords });
+      // res.end("Success!");
     })
     .catch((error) => console.log(error));
 }
