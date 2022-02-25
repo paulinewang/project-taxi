@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import { getEmail } from "../state/selectors";
 import useStore from "../state/store";
-=======
-import styled from "styled-components";
->>>>>>> 32b93539d61285540c424465355ff0fb4a1cac79
 
 const PlayerWrapper = styled.div`
   padding: 10px 40px;
