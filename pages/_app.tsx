@@ -4,9 +4,6 @@ import { ThemeProvider } from "styled-components";
 
 import theme from "../shared/theme";
 import GlobalStyle from "../shared/GlobalStyle";
-import { initFirebase } from "../shared/init";
-
-initFirebase();
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

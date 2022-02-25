@@ -6,16 +6,17 @@ const Main = styled.main`
   flex: 1;
 `;
 
-
-type LayoutProps  = {
-    children?: ReactNode;
-}
+type LayoutProps = {
+  children?: ReactNode;
+};
 
 const Layout = ({ children }: LayoutProps) => {
-  return (<>
-    <Header />
-    <Main>{children}</Main>
-  </>);
+  return (
+    <>
+      <Header />
+      <Main>{children}</Main>
+    </>
+  );
 };
 
 export default Layout;
