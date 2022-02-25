@@ -8,11 +8,6 @@ const Main = styled.main`
   justify-content: space-between;
 `;
 
-const RightColumn = styled.div`
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
 type LayoutProps = {
   children?: ReactNode;
 };
