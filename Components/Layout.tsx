@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
 import Header from "./Header";
+import InviteButton from "./InviteButton";
+import OngoingGame from "./OngoingGame";
 
 const Main = styled.main`
   flex: 1;
@@ -14,7 +16,11 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <Header />
-      <Main>{children}</Main>
+      <Main>
+        <InviteButton />
+        <OngoingGame />
+        {children}
+      </Main>
     </>
   );
 };
