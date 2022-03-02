@@ -2,6 +2,7 @@ import firebase from "firebase/compat/app";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { initFirebase, signInWithGoogle } from "../shared/init";
+import useStore from "../state/store";
 
 const Head = styled.header`
   display: flex;
@@ -38,12 +39,13 @@ type UserData = {
   email: string;
   displayName: string;
 };
+
 const Header = () => {
   function signOut() {
     firebase.auth().signOut();
   }
 
-  const [user, setUser] = useState<UserData | null>(null);
+  const { user, setUser} = useStore(state => state);
 
   useEffect(() => {
     initFirebase();

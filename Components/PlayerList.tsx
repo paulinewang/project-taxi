@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import styled from "styled-components";
+import { getEmail } from "../state/selectors";
+import useStore from "../state/store";
 
 const PlayerWrapper = styled.div`
   padding: 10px 40px;
@@ -14,12 +17,23 @@ const Player = styled.li`
   list-style-type: none;
 `;
 
-const PlayerList = ({ players, currentUserId }: any) => {
+const PlayerList = () => {
+  const { setPlayers, players } = useStore();
+  const email = useStore(getEmail);
+
+  useEffect(() => {
+    fetch("api/hello")
+      .then((res) => res.json())
+      .then((data) => {
+        setPlayers(data.userRecords.users);
+      });
+  }, []);
+
   return (
     <PlayerWrapper>
       <Title>Players</Title>
       {players?.map((player: any) => {
-        if (player.uid === currentUserId) return;
+        if (player.email === email) return;
 
         return <Player key={player.uid}>{player.displayName}</Player>;
       })}

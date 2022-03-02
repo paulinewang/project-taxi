@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import { getDatabase, ref, set, onValue } from "firebase/database";
-import { userInfo } from "os";
 import { useEffect, useState } from "react";
+import useStore from "../state/store";
+import { getEmail, isOwner } from "../state/selectors";
+import { Alert } from "../state/dbTypes";
 
 const Button = styled.button<{ disabledCustom: boolean }>`
   text-transform: uppercase;
@@ -10,8 +12,7 @@ const Button = styled.button<{ disabledCustom: boolean }>`
   font-size: 32px;
   padding: 10px 40px;
   background-color: white;
-  color: ${({ disabledCustom }) =>
-  disabledCustom ? "#CCC" : "black"};
+  color: ${({ disabledCustom }) => (disabledCustom ? "#CCC" : "black")};
   cursor: ${({ disabledCustom }) =>
     disabledCustom ? "not-allowed" : "pointer"};
   border: 3px solid
@@ -23,7 +24,11 @@ const Button = styled.button<{ disabledCustom: boolean }>`
 `;
 
 const InviteButton = () => {
-  const [alerts, setAlerts] = useState({});
+  const [alerts, setAlerts] = useState<Alert>();
+  const owner = useStore(isOwner(alerts?.owner || ""));
+
+  const emailUser = useStore(getEmail);
+  console.log(emailUser);
 
   useEffect(() => {
     const getAlerts = () => {
@@ -40,9 +45,8 @@ const InviteButton = () => {
   }, [setAlerts]);
 
   const gameInProgress = true;
-  const isOwner = false;
 
-  const disabled = gameInProgress && isOwner;
+  const disabled = gameInProgress && owner;
 
   const createInvite = async () => {
     if (disabled) {
@@ -52,7 +56,7 @@ const InviteButton = () => {
     const db = getDatabase();
 
     const res = await set(ref(db, "alerts/1"), {
-      owner: "neomaxzero@gmail.com",
+      owner: emailUser,
       participants: [
         { email: "pauline.wang@wetransfer.com", state: "ACCEPTED" },
       ],

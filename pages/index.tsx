@@ -4,6 +4,9 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Layout from "../Components/Layout";
+import InviteButton from "../Components/InviteButton";
+import OngoingGame from "../Components/OngoingGame";
+import Sender from "../Components/Sender";
 
 const Home: NextPage = () => {
   return (
@@ -15,6 +18,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Layout>
+        <Sender />
         <Image
           src="/landing-page-illustration.png"
           alt="Yellow taxi and a lost girl"
