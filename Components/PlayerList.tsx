@@ -30,15 +30,22 @@ const PlayerList = () => {
       });
   }, []);
 
-const hasAcceptedGame= (player:any) => {
-  const compliantParticipant = alert?.participants?.find((participant) => {
-    console.log("player", player)
-    console.log("participant", participant)
-    if(participant.email === player.email && participant.status === INVITATION_STATUS.ACCEPTED) {
+const returnStatus= (player:any) => {
+  const findParticipant = alert?.participants?.find((participant) => {
+    if(participant.email === player.email) {
       return true;
     }
   })
-  return Boolean(compliantParticipant);
+
+  if(!findParticipant) {
+    return '🟡';
+  }
+
+  if(findParticipant.status === INVITATION_STATUS.ACCEPTED) {
+    return '🟢';
+  }
+
+  return '🔴';
 }
 
   return (
@@ -48,8 +55,8 @@ const hasAcceptedGame= (player:any) => {
         if (player.email === email) return;
 
         return <Player key={player.uid}>
+          {returnStatus(player)}
           {player.displayName}
-          {hasAcceptedGame(player) ? 'ACCEPTED' : 'DECLINED'}
         </Player>;
       })}
     </PlayerWrapper>
