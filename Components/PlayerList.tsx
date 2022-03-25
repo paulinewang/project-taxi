@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import { INVITATION_STATUS } from "../state/dbTypes";
-import { getEmail } from "../state/selectors";
+import { getEmail, isOwner } from "../state/selectors";
 import useStore from "../state/store";
 
 const PlayerWrapper = styled.div`
@@ -31,6 +31,10 @@ const PlayerList = () => {
   }, []);
 
 const returnStatus= (player:any) => {
+  if(player.email === alert?.owner) {
+    return '👑';
+  }
+
   const findParticipant = alert?.participants?.find((participant) => {
     if(participant.email === player.email) {
       return true;
@@ -55,7 +59,7 @@ const returnStatus= (player:any) => {
         if (player.email === email) return;
 
         return <Player key={player.uid}>
-          {returnStatus(player)}
+          {returnStatus(player)}&nbsp;
           {player.displayName}
         </Player>;
       })}
