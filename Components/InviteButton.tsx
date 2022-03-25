@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import { getDatabase, ref, set, onValue, update } from "firebase/database";
 import { useEffect, useState } from "react";
 import useStore from "../state/store";
 import { getEmail, isOwner } from "../state/selectors";
-import { Alert } from "../state/dbTypes";
+import { Alert, INVITATION_STATUS } from "../state/dbTypes";
 
 const Button = styled.button<{ disabledCustom: boolean }>`
   text-transform: uppercase;
@@ -25,7 +25,7 @@ const Button = styled.button<{ disabledCustom: boolean }>`
 
 const InviteButton = () => {
   const [alerts, setAlerts] = useState<Alert>();
-  const owner = useStore(isOwner(alerts?.owner || ""));
+  const amIowner = useStore(isOwner(alerts?.owner || ""));
 
   const emailUser = useStore(getEmail);
   console.log(emailUser);
@@ -44,30 +44,52 @@ const InviteButton = () => {
     getAlerts();
   }, [setAlerts]);
 
-  const gameInProgress = true;
+  const gameInProgress = Boolean(alerts);
 
-  const disabled = gameInProgress && owner;
+  const disabled = gameInProgress && amIowner;
 
-  const createInvite = async () => {
+  const onClick = async () => {
     if (disabled) {
       return;
     }
 
     const db = getDatabase();
 
-    const res = await set(ref(db, "alerts/1"), {
-      owner: emailUser,
-      participants: [
-        { email: "pauline.wang@wetransfer.com", state: "ACCEPTED" },
-      ],
-    });
+    if (!gameInProgress || amIowner) {
+      const res = await set(ref(db, "alerts/1"), {
+        owner: emailUser,
+        participants: [],
+      });
+    } else {
+      console.log("here??");
+      // Invitee
 
-    console.log("Succeed?", res);
+      const previousParticipants = alerts ? alerts.participants : [] 
+
+      const res = await update(ref(db, "alerts/1"), {
+        "/participants": [
+          ...previousParticipants,
+          { email: emailUser, state: INVITATION_STATUS.ACCEPTED },
+        ],
+      });
+    }
+  };
+
+  const getButtonLabel = () => {
+    if (!gameInProgress) {
+      return "Send Request";
+    }
+
+    if (amIowner) {
+      return "Waiting";
+    }
+
+    return "Join Game";
   };
 
   return (
-    <Button disabledCustom={disabled} onClick={createInvite}>
-      Send request
+    <Button disabledCustom={disabled} onClick={onClick}>
+      {getButtonLabel()}
     </Button>
   );
 };
