@@ -24,8 +24,8 @@ const Button = styled.button<{ disabledCustom: boolean }>`
 `;
 
 const InviteButton = () => {
-  const [alerts, setAlerts] = useState<Alert>();
-  const isOwner = useStore(getIsOwner(alerts?.owner || ""));
+  const {alert, setAlert} = useStore();
+  const isOwner = useStore(getIsOwner(alert?.owner || ""));
 
   const emailUser = useStore(getEmail);
   console.log(emailUser);
@@ -37,14 +37,14 @@ const InviteButton = () => {
       onValue(alertsRef, (snapshot) => {
         const data = snapshot.val();
         console.log(data);
-        setAlerts(data);
+        setAlert(data);
       });
     };
 
     getAlerts();
-  }, [setAlerts]);
+  }, [setAlert]);
 
-  const gameInProgress = Boolean(alerts);
+  const gameInProgress = Boolean(alert);
 
   const disabled = gameInProgress && isOwner;
 
@@ -65,12 +65,12 @@ const InviteButton = () => {
       // Invitee
 
       console
-      const previousParticipants = (alerts && alerts.participants) ? alerts.participants : [] 
+      const previousParticipants = (alert && alert.participants) ? alert.participants : []
 
       const res = await update(ref(db, "alerts/1"), {
         "/participants": [
           ...previousParticipants,
-          { email: emailUser, state: INVITATION_STATUS.ACCEPTED },
+          { email: emailUser, status: INVITATION_STATUS.ACCEPTED, sherlock: 'dog' },
         ],
       });
     }
