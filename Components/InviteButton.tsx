@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { getDatabase, ref, set, onValue, update } from "firebase/database";
 import { useEffect, useState } from "react";
 import useStore from "../state/store";
-import { getEmail, isOwner } from "../state/selectors";
+import { getEmail, isOwner as getIsOwner } from "../state/selectors";
 import { Alert, INVITATION_STATUS } from "../state/dbTypes";
 
 const Button = styled.button<{ disabledCustom: boolean }>`
@@ -25,7 +25,7 @@ const Button = styled.button<{ disabledCustom: boolean }>`
 
 const InviteButton = () => {
   const [alerts, setAlerts] = useState<Alert>();
-  const amIowner = useStore(isOwner(alerts?.owner || ""));
+  const isOwner = useStore(getIsOwner(alerts?.owner || ""));
 
   const emailUser = useStore(getEmail);
   console.log(emailUser);
@@ -46,7 +46,7 @@ const InviteButton = () => {
 
   const gameInProgress = Boolean(alerts);
 
-  const disabled = gameInProgress && amIowner;
+  const disabled = gameInProgress && isOwner;
 
   const onClick = async () => {
     if (disabled) {
@@ -55,7 +55,7 @@ const InviteButton = () => {
 
     const db = getDatabase();
 
-    if (!gameInProgress || amIowner) {
+    if (!gameInProgress || isOwner) {
       const res = await set(ref(db, "alerts/1"), {
         owner: emailUser,
         participants: [],
@@ -64,7 +64,8 @@ const InviteButton = () => {
       console.log("here??");
       // Invitee
 
-      const previousParticipants = alerts ? alerts.participants : [] 
+      console
+      const previousParticipants = (alerts && alerts.participants) ? alerts.participants : [] 
 
       const res = await update(ref(db, "alerts/1"), {
         "/participants": [
@@ -80,7 +81,7 @@ const InviteButton = () => {
       return "Send Request";
     }
 
-    if (amIowner) {
+    if (isOwner) {
       return "Waiting";
     }
 
