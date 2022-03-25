@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { getDatabase, ref, set, onValue, update } from "firebase/database";
+import { getDatabase, ref, set, onValue, update, remove } from "firebase/database";
 import { useEffect, useState } from "react";
 import useStore from "../state/store";
 import { getEmail, isOwner as getIsOwner } from "../state/selectors";
 import { Alert, INVITATION_STATUS } from "../state/dbTypes";
 
-const Button = styled.button<{ disabledCustom: boolean }>`
+const Button = styled.button<{ disabledCustom?: boolean }>`
   text-transform: uppercase;
   font: Roboto;
   font-weight: bold;
@@ -48,12 +48,27 @@ const InviteButton = () => {
 
   const disabled = gameInProgress && isOwner;
 
+  const db = getDatabase();
+
+  const cancelGame = async () => {
+    if(isOwner) {
+      const res = await remove(ref(db, "alerts/1"));
+    }else {
+      const previousParticipants = (alert && alert.participants) ? alert.participants : []
+      const res = await update(ref(db, "alerts/1"), {
+        "/participants": [
+          ...previousParticipants,
+          { email: emailUser, status: INVITATION_STATUS.DECLINED},
+        ],
+      });
+    }
+  }
+
   const onClick = async () => {
     if (disabled) {
       return;
     }
 
-    const db = getDatabase();
 
     if (!gameInProgress || isOwner) {
       const res = await set(ref(db, "alerts/1"), {
@@ -61,10 +76,7 @@ const InviteButton = () => {
         participants: [],
       });
     } else {
-      console.log("here??");
       // Invitee
-
-      console
       const previousParticipants = (alert && alert.participants) ? alert.participants : []
 
       const res = await update(ref(db, "alerts/1"), {
@@ -89,9 +101,16 @@ const InviteButton = () => {
   };
 
   return (
-    <Button disabledCustom={disabled} onClick={onClick}>
-      {getButtonLabel()}
-    </Button>
+    <>
+      <Button disabledCustom={disabled} onClick={onClick}>
+        {getButtonLabel()}
+      </Button>
+      {gameInProgress &&
+        <Button onClick={cancelGame}>
+          {isOwner ? 'Cancel the fun' : 'No fun for me'}
+        </Button>
+      }
+    </>
   );
 };
 
