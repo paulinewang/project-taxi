@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { INVITATION_STATUS } from "../state/dbTypes";
+import useStore from "../state/store";
 
 const Wrapper = styled.div`
   padding: 10px 40px;
@@ -11,10 +13,13 @@ const Title = styled.h1`
 `;
 
 const OngoingGame = () => {
+    const {players, alert} = useStore();
+    const compliantParticipantsLength = alert?.participants?.filter((participant) => participant.status ===INVITATION_STATUS.ACCEPTED).length || 0;
+
   return (
     <Wrapper>
       <Title>Ongoing game</Title>
-      <p>Youhou, 1/2 players have accepted your request!</p>
+      <p>Youhou, {compliantParticipantsLength}/{players.length - 1} players have accepted your request!</p>
 
       <div>
         <h2>Links</h2>

@@ -12,6 +12,7 @@ const RightColumn = styled.div`
 
 const Sender = () => {
   const isLoggedIn = useStore(getIsLoggedIn);
+  const {alert} = useStore();
 
   if (!isLoggedIn) {
     return null;
@@ -22,7 +23,9 @@ const Sender = () => {
       <PlayerList />
       <RightColumn>
         <InviteButton />
-        <OngoingGame />
+        {alert &&
+          <OngoingGame />
+        }
       </RightColumn>
     </>
   );
