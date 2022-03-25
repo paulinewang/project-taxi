@@ -70,7 +70,7 @@ const InviteButton = () => {
       const res = await update(ref(db, "alerts/1"), {
         "/participants": [
           ...previousParticipants,
-          { email: emailUser, status: INVITATION_STATUS.ACCEPTED, sherlock: 'dog' },
+          { email: emailUser, status: INVITATION_STATUS.ACCEPTED},
         ],
       });
     }

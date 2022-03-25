@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import Layout from "../components/Layout";
-import InviteButton from "../components/InviteButton";
-import OngoingGame from "../components/OngoingGame";
-import Sender from "../components/Sender";
+import Layout from "../Components/Layout";
+import InviteButton from "../Components/InviteButton";
+import OngoingGame from "../Components/OngoingGame";
+import Sender from "../Components/Sender";
 
 const Home: NextPage = () => {
   return (
