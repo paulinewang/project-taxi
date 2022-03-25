@@ -54,13 +54,24 @@ const InviteButton = () => {
     if(isOwner) {
       const res = await remove(ref(db, "alerts/1"));
     }else {
-      const previousParticipants = (alert && alert.participants) ? alert.participants : []
-      const res = await update(ref(db, "alerts/1"), {
-        "/participants": [
-          ...previousParticipants,
-          { email: emailUser, status: INVITATION_STATUS.DECLINED},
-        ],
-      });
+      const previousParticipants = (alert && alert.participants) ? alert.participants : [];
+      const currentUserHasAlreadyReply = previousParticipants.find((participant) => participant.email === emailUser)
+
+      if(currentUserHasAlreadyReply) {
+        const res = await update(ref(db, "alerts/1"), {
+          "/participants": [
+            ...previousParticipants.filter((participant) => participant.email !== emailUser),
+            { email: emailUser, status: INVITATION_STATUS.DECLINED},
+          ],
+        });
+      } else {
+        const res = await update(ref(db, "alerts/1"), {
+          "/participants": [
+            ...previousParticipants,
+            { email: emailUser, status: INVITATION_STATUS.DECLINED},
+          ],
+        });
+      }
     }
   }
 
