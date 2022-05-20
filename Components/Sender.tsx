@@ -1,9 +1,10 @@
 import styled from "styled-components";
-import { getIsLoggedIn } from "../state/selectors";
+import { getIsLoggedIn, getLoggedInUserStatus } from "../state/selectors";
 import useStore from "../state/store";
 import InviteButton from "./InviteButton";
 import OngoingGame from "./OngoingGame";
 import PlayerList from "./PlayerList";
+import {INVITATION_STATUS} from "../state/dbTypes";
 
 const RightColumn = styled.div`
   flex-direction: column;
@@ -13,7 +14,9 @@ const RightColumn = styled.div`
 const Sender = () => {
   const isLoggedIn = useStore(getIsLoggedIn);
   const {alert} = useStore();
+  const loggedInUserStatus = useStore(getLoggedInUserStatus);
 
+  const hasAccepted = loggedInUserStatus === INVITATION_STATUS.ACCEPTED;
   if (!isLoggedIn) {
     return null;
   }
@@ -23,7 +26,7 @@ const Sender = () => {
       <PlayerList />
       <RightColumn>
         <InviteButton />
-        {alert &&
+        {(alert && hasAccepted) &&
           <OngoingGame />
         }
       </RightColumn>
