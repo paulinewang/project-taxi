@@ -1,5 +1,12 @@
 import styled from "styled-components";
-import { getDatabase, ref, set, onValue, update, remove } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  update,
+  remove,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import useStore from "../state/store";
 import { getEmail, isOwner as getIsOwner } from "../state/selectors";
@@ -24,7 +31,7 @@ const Button = styled.button<{ disabledCustom?: boolean }>`
 `;
 
 const InviteButton = () => {
-  const {alert, setAlert} = useStore();
+  const { alert, setAlert } = useStore();
   const isOwner = useStore(getIsOwner(alert?.owner || ""));
 
   const emailUser = useStore(getEmail);
@@ -46,54 +53,83 @@ const InviteButton = () => {
 
   const gameInProgress = Boolean(alert);
 
-  const disabled = gameInProgress && isOwner;
+  const getPreviousParticipants = () =>
+    alert && alert.participants ? alert.participants : [];
+
+  const getLoggedInUserStatus = () => {
+    const previousParticipants = getPreviousParticipants();
+
+    const myself = previousParticipants.find(
+      (participant) => participant.email === emailUser
+    );
+    return myself?.status;
+  };
+
+  const gameAccepted = getLoggedInUserStatus() === INVITATION_STATUS.ACCEPTED;
+
+  console.log('render again');
+  const disabled = (gameInProgress && isOwner) || gameAccepted;
 
   const db = getDatabase();
 
   const cancelGame = async () => {
-    if(isOwner) {
+    if (isOwner) {
       const res = await remove(ref(db, "alerts/1"));
-    }else {
-      const previousParticipants = (alert && alert.participants) ? alert.participants : [];
-      const currentUserHasAlreadyReply = previousParticipants.find((participant) => participant.email === emailUser)
+    } else {
+      const previousParticipants =
+        alert && alert.participants ? alert.participants : [];
 
-      if(currentUserHasAlreadyReply) {
+      const currentUserHasAlreadyReply = previousParticipants.find(
+        (participant) => participant.email === emailUser
+      );
+
+      if (currentUserHasAlreadyReply) {
         const res = await update(ref(db, "alerts/1"), {
           "/participants": [
-            ...previousParticipants.filter((participant) => participant.email !== emailUser),
-            { email: emailUser, status: INVITATION_STATUS.DECLINED},
+            ...previousParticipants.filter(
+              (participant) => participant.email !== emailUser
+            ),
+            { email: emailUser, status: INVITATION_STATUS.DECLINED },
           ],
         });
       } else {
         const res = await update(ref(db, "alerts/1"), {
           "/participants": [
             ...previousParticipants,
-            { email: emailUser, status: INVITATION_STATUS.DECLINED},
+            { email: emailUser, status: INVITATION_STATUS.DECLINED },
           ],
         });
       }
     }
-  }
+  };
 
   const onClick = async () => {
+    console.log('DISABLED:', disabled);
     if (disabled) {
       return;
     }
 
+    const previousParticipants = getPreviousParticipants();
+
+    const updatedParticipants = previousParticipants.filter(participant => participant.email !== emailUser);
 
     if (!gameInProgress || isOwner) {
-      const res = await set(ref(db, "alerts/1"), {
+      await set(ref(db, "alerts/1"), {
         owner: emailUser,
         participants: [],
       });
     } else {
       // Invitee
-      const previousParticipants = (alert && alert.participants) ? alert.participants : []
+      const myself = getLoggedInUserStatus();
 
-      const res = await update(ref(db, "alerts/1"), {
+      if (myself === INVITATION_STATUS.ACCEPTED) {
+        return;
+      }
+
+      await update(ref(db, "alerts/1"), {
         "/participants": [
-          ...previousParticipants,
-          { email: emailUser, status: INVITATION_STATUS.ACCEPTED},
+          ...updatedParticipants,
+          { email: emailUser, status: INVITATION_STATUS.ACCEPTED },
         ],
       });
     }
@@ -116,11 +152,11 @@ const InviteButton = () => {
       <Button disabledCustom={disabled} onClick={onClick}>
         {getButtonLabel()}
       </Button>
-      {gameInProgress &&
+      {gameInProgress && (
         <Button onClick={cancelGame}>
-          {isOwner ? 'Cancel the fun' : 'No fun for me'}
+          {isOwner ? "Cancel the fun" : "No fun for me"}
         </Button>
-      }
+      )}
     </>
   );
 };

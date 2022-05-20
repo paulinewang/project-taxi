@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useSpring, animated } from "react-spring";
+import { INVITATION_STATUS } from "../state/dbTypes";
 import useStore from "../state/store";
 
-const Taxi = ({ count }) => {
+const Taxi = ({ count, email }) => {
   const props = useSpring({
     to: { right: `${90 - count * 10}%` },
     from: { right: "-10%" },
@@ -19,6 +20,7 @@ const Taxi = ({ count }) => {
         ...props,
       }}
     >
+      <p>{email}</p>
       🚕
     </animated.div>
   );
@@ -27,13 +29,13 @@ const Taxi = ({ count }) => {
 const Banners = () => {
   const { alert } = useStore();
 
-  console.log(alert?.participants);
-
   if (!alert?.participants) {
     return null;
   }
 
-  return [...alert?.participants].map((a, i) => <Taxi key={i} count={i + 1} />);
+  return [...alert?.participants]
+    .filter((taxi) => taxi.status === INVITATION_STATUS.ACCEPTED)
+    .map((taxi, i) => <Taxi key={i} count={i + 1} email={taxi.email}/>);
 };
 
 export default Banners;
