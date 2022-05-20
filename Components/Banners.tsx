@@ -20,7 +20,6 @@ const Taxi = ({ count, email }) => {
         ...props,
       }}
     >
-      <p>{email}</p>
       🚕
     </animated.div>
   );
