@@ -1,5 +1,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import styled from "styled-components";
+import Banners from "./Banners";
 
 import Header from "./Header";
 
@@ -19,6 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
       <Main>
         {children}
       </Main>
+      <Banners />
     </>
   );
 };
