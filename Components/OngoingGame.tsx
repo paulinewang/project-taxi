@@ -27,7 +27,8 @@ const OngoingGame = () => {
     const alerts = ref(db, "/alerts/1");
     onValue(alerts, (snapshot) => {
       const data = snapshot.val();
-      setLinkGame(data.linkGame);
+
+      setLinkGame(data?.linkGame);
     });
   }, [setLinkGame]);
 
