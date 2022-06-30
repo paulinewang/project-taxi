@@ -5,7 +5,7 @@ import {
   set,
   onValue,
   update,
-  
+
   remove,
 } from "firebase/database";
 import { useEffect, useState } from "react";
@@ -41,7 +41,7 @@ const Input = styled.input`
 const InviteButton = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const { alert, setAlert } = useStore();
-  const isOwner = useStore(getIsOwner(alert?.owner || ""));
+  const isOwner = useStore(getIsOwner(alert?.owner || "NO_OWNER"));
 
   const emailUser = useStore(getEmail);
   console.log(emailUser);
