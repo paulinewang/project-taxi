@@ -45,7 +45,7 @@ const OngoingGame = () => {
         accepted your request!
       </p>
 
-      {hasAccepted && isOwnerReally && (
+      {(hasAccepted && !isOwner) && (
         <div>
           <h2>Links</h2>
           <a href="https://meet.google.com/uys-dbiq-nfm" target="blank">
