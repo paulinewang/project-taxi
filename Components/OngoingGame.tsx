@@ -1,3 +1,5 @@
+import { getDatabase, ref, onValue } from "@firebase/database";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { INVITATION_STATUS } from "../state/dbTypes";
 import useStore from "../state/store";
@@ -13,13 +15,29 @@ const Title = styled.h1`
 `;
 
 const OngoingGame = () => {
-    const {players, alert} = useStore();
-    const compliantParticipantsLength = alert?.participants?.filter((participant) => participant.status ===INVITATION_STATUS.ACCEPTED).length || 0;
+  const [linkGame, setLinkGame] = useState();
+  const { players, alert } = useStore();
+  const compliantParticipantsLength =
+    alert?.participants?.filter(
+      (participant) => participant.status === INVITATION_STATUS.ACCEPTED
+    ).length || 0;
+
+  useEffect(() => {
+    const db = getDatabase();
+    const alerts = ref(db, "/alerts/1");
+    onValue(alerts, (snapshot) => {
+      const data = snapshot.val();
+      setLinkGame(data.linkGame);
+    });
+  }, [setLinkGame]);
 
   return (
     <Wrapper>
       <Title>Ongoing game</Title>
-      <p>Youhou, {compliantParticipantsLength}/{players.length - 1} players have accepted your request!</p>
+      <p>
+        Youhou, {compliantParticipantsLength}/{players.length - 1} players have
+        accepted your request!
+      </p>
 
       <div>
         <h2>Links</h2>
@@ -28,7 +46,7 @@ const OngoingGame = () => {
         </a>
         <br />
 
-        <a href="https://virtualvacation.us/private-room" target="blank">
+        <a href={linkGame} target="blank">
           City Guessr
         </a>
       </div>

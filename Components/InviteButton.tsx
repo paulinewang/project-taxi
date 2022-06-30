@@ -5,6 +5,7 @@ import {
   set,
   onValue,
   update,
+  
   remove,
 } from "firebase/database";
 import { useEffect, useState } from "react";
@@ -142,6 +143,7 @@ const InviteButton = () => {
     await set(ref(db, "alerts/1"), {
       owner: emailUser,
       participants: [],
+      linkGame: inputValue
     });
   };
 
