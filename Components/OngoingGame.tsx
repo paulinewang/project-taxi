@@ -2,6 +2,7 @@ import { getDatabase, ref, onValue } from "@firebase/database";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { INVITATION_STATUS } from "../state/dbTypes";
+import { getLoggedInUserStatus, isOwner } from "../state/selectors";
 import useStore from "../state/store";
 
 const Wrapper = styled.div`
@@ -22,6 +23,10 @@ const OngoingGame = () => {
       (participant) => participant.status === INVITATION_STATUS.ACCEPTED
     ).length || 0;
 
+  const loggedInUserStatus = useStore(getLoggedInUserStatus);
+
+  const isOwnerReally = useStore(isOwner(alert?.owner || ""));
+  const hasAccepted = loggedInUserStatus === INVITATION_STATUS.ACCEPTED;
   useEffect(() => {
     const db = getDatabase();
     const alerts = ref(db, "/alerts/1");
@@ -40,17 +45,19 @@ const OngoingGame = () => {
         accepted your request!
       </p>
 
-      <div>
-        <h2>Links</h2>
-        <a href="https://meet.google.com/uys-dbiq-nfm" target="blank">
-          Google Meet
-        </a>
-        <br />
+      {hasAccepted && isOwnerReally && (
+        <div>
+          <h2>Links</h2>
+          <a href="https://meet.google.com/uys-dbiq-nfm" target="blank">
+            Google Meet
+          </a>
+          <br />
 
-        <a href={linkGame} target="blank">
-          City Guessr
-        </a>
-      </div>
+          <a href={linkGame} target="blank">
+            City Guessr
+          </a>
+        </div>
+      )}
     </Wrapper>
   );
 };
