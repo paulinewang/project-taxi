@@ -30,7 +30,15 @@ const Button = styled.button<{ disabledCustom?: boolean }>`
       disabledCustom ? "#CCC" : theme.colors.yellow};
 `;
 
+const Input = styled.input`
+  border: 3px solid ${({ theme }) => theme.colors.green};
+  padding: 10px;
+  margin: 10px;
+  margin-top: 24px;
+`;
+
 const InviteButton = () => {
+  const [inputValue, setInputValue] = useState<string>('');
   const { alert, setAlert } = useStore();
   const isOwner = useStore(getIsOwner(alert?.owner || ""));
 
@@ -67,8 +75,7 @@ const InviteButton = () => {
 
   const gameAccepted = getLoggedInUserStatus() === INVITATION_STATUS.ACCEPTED;
 
-  console.log('render again');
-  const disabled = (gameInProgress && isOwner) || gameAccepted;
+  const disabled = (gameInProgress && isOwner) || gameAccepted || !inputValue;
 
   const db = getDatabase();
 
@@ -104,14 +111,15 @@ const InviteButton = () => {
   };
 
   const onClick = async () => {
-    console.log('DISABLED:', disabled);
     if (disabled) {
       return;
     }
 
     const previousParticipants = getPreviousParticipants();
 
-    const updatedParticipants = previousParticipants.filter(participant => participant.email !== emailUser);
+    const updatedParticipants = previousParticipants.filter(
+      (participant) => participant.email !== emailUser
+    );
 
     if (!gameInProgress || isOwner) {
       await set(ref(db, "alerts/1"), {
@@ -149,6 +157,12 @@ const InviteButton = () => {
 
   return (
     <>
+      {!gameInProgress && (
+        <Input
+          placeholder="Where is the fun?"
+          onChange={({ target }) => setInputValue(target.value)}
+        />
+      )}
       <Button disabledCustom={disabled} onClick={onClick}>
         {getButtonLabel()}
       </Button>
