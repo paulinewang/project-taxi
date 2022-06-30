@@ -41,7 +41,7 @@ const OngoingGame = () => {
     <Wrapper>
       <Title>Ongoing game</Title>
       <p>
-        Youhou, {compliantParticipantsLength}/{players.length} players are ready to have some fun!
+        Youhou, {compliantParticipantsLength + 1}/{players.length} players are ready to have some fun!
       </p>
 
       {(hasAccepted && !isOwnerReally) && (
