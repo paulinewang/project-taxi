@@ -33,7 +33,9 @@ const OngoingGame = () => {
     onValue(alerts, (snapshot) => {
       const data = snapshot.val();
 
-      setLinkGame(data?.linkGame);
+      if (data) {
+        setLinkGame(data.linkGame);
+      }
     });
   }, [setLinkGame]);
 
