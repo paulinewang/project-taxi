@@ -108,8 +108,8 @@ const InviteButton = () => {
     }
   };
 
-  const onClick = async () => {
-    if (disabled) {
+  const onClickInvitee = async () => {
+    if ((gameInProgress && isOwner) || gameAccepted) {
       return;
     }
 
@@ -119,26 +119,30 @@ const InviteButton = () => {
       (participant) => participant.email !== emailUser
     );
 
-    if (!gameInProgress || isOwner) {
-      await set(ref(db, "alerts/1"), {
-        owner: emailUser,
-        participants: [],
-      });
-    } else {
-      // Invitee
-      const myself = getLoggedInUserStatus();
+    // Invitee
+    const myself = getLoggedInUserStatus();
 
-      if (myself === INVITATION_STATUS.ACCEPTED) {
-        return;
-      }
-
-      await update(ref(db, "alerts/1"), {
-        "/participants": [
-          ...updatedParticipants,
-          { email: emailUser, status: INVITATION_STATUS.ACCEPTED },
-        ],
-      });
+    if (myself === INVITATION_STATUS.ACCEPTED) {
+      return;
     }
+
+    await update(ref(db, "alerts/1"), {
+      "/participants": [
+        ...updatedParticipants,
+        { email: emailUser, status: INVITATION_STATUS.ACCEPTED },
+      ],
+    });
+  };
+
+  const onClickHost = async () => {
+    if (gameInProgress && !isOwner) {
+      return;
+    }
+
+    await set(ref(db, "alerts/1"), {
+      owner: emailUser,
+      participants: [],
+    });
   };
 
   const getButtonLabelInvitee = () => {
@@ -158,11 +162,14 @@ const InviteButton = () => {
         />
       )}
       {!gameInProgress ? (
-        <Button disabledCustom={!inputValue} onClick={onClick}>
+        <Button disabledCustom={!inputValue} onClick={onClickHost}>
           Send Request
         </Button>
       ) : (
-        <Button disabledCustom={gameInProgress && isOwner || gameAccepted} onClick={onClick}>
+        <Button
+          disabledCustom={(gameInProgress && isOwner) || gameAccepted}
+          onClick={onClickInvitee}
+        >
           {getButtonLabelInvitee()}
         </Button>
       )}
