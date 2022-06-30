@@ -38,7 +38,7 @@ const Input = styled.input`
 `;
 
 const InviteButton = () => {
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>("");
   const { alert, setAlert } = useStore();
   const isOwner = useStore(getIsOwner(alert?.owner || ""));
 
@@ -74,8 +74,6 @@ const InviteButton = () => {
   };
 
   const gameAccepted = getLoggedInUserStatus() === INVITATION_STATUS.ACCEPTED;
-
-  const disabled = (gameInProgress && isOwner) || gameAccepted || !inputValue;
 
   const db = getDatabase();
 
@@ -143,11 +141,7 @@ const InviteButton = () => {
     }
   };
 
-  const getButtonLabel = () => {
-    if (!gameInProgress) {
-      return "Send Request";
-    }
-
+  const getButtonLabelInvitee = () => {
     if (isOwner) {
       return "Waiting";
     }
@@ -163,9 +157,15 @@ const InviteButton = () => {
           onChange={({ target }) => setInputValue(target.value)}
         />
       )}
-      <Button disabledCustom={disabled} onClick={onClick}>
-        {getButtonLabel()}
-      </Button>
+      {!gameInProgress ? (
+        <Button disabledCustom={!inputValue} onClick={onClick}>
+          Send Request
+        </Button>
+      ) : (
+        <Button disabledCustom={gameInProgress && isOwner || gameAccepted} onClick={onClick}>
+          {getButtonLabelInvitee()}
+        </Button>
+      )}
       {gameInProgress && (
         <Button onClick={cancelGame}>
           {isOwner ? "Cancel the fun" : "No fun for me"}
